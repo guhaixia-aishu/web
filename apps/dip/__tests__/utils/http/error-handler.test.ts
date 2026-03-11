@@ -176,9 +176,13 @@ describe('error-handler', () => {
         message: 'TIMEOUT',
       };
 
+      // Mock intl 返回具体的错误消息
+      vi.mocked(intl.get).mockReturnValue('请求超时，请稍后重试');
+
       // 第一次调用
       await handleError({ error, url: '/api/test', reject: mockReject });
       expect(message.warning).toHaveBeenCalledTimes(1);
+      expect(message.warning).toHaveBeenCalledWith('请求超时，请稍后重试');
 
       // 1秒后再次调用，应该被去重
       vi.spyOn(Date, 'now').mockReturnValue(2000);
