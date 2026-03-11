@@ -4,7 +4,7 @@
  */
 
 function getParam(name?: string | string[]): any {
-  if (!window) return ''
+  if (typeof window === 'undefined') return ''
 
   let paramsObj: Record<string, string> = {}
 
@@ -41,11 +41,11 @@ function getParam(name?: string | string[]): any {
 const getUrl = (url: any) => {
   const returl: any = {}
   if (url.indexOf('?') !== -1) {
-    const queryString = url.substr(1)
+    const queryString = url.substr(url.indexOf('?') + 1)
     const queryParams = queryString.split('&')
     for (let i = 0; i < queryParams.length; i++) {
       const [key, value] = queryParams[i].split('=')
-      returl[key] = decodeURI(value)
+      returl[key] = decodeURIComponent(value || '')
     }
   }
   return returl

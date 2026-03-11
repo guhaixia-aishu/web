@@ -7,10 +7,10 @@ const isString = (str: any) => typeof str === 'string'
  * @param {String} text 文本
  */
 const fuzzyMatch = (keyWord: string, text: string) => {
-  if (!(isString(keyWord) || isString(text))) return
+  if (!isString(keyWord) || !isString(text)) return
 
-  const k = keyWord?.toLowerCase()
-  const t = text?.toLowerCase()
+  const k = keyWord.toLowerCase()
+  const t = text.toLowerCase()
 
   return t.indexOf(k) !== -1
 }

@@ -15,7 +15,10 @@
     "check:all": "pnpm run check && pnpm run check:styles",
     "format": "biome format --write src/",
     "format:styles": "prettier --write \"src/**/*.{less,scss,sass}\"",
-    "lint:styles": "stylelint \"src/**/*.{less,scss,sass}\""
+    "lint:styles": "stylelint \"src/**/*.{less,scss,sass}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -116,6 +119,10 @@
     "@rsbuild/plugin-less": "^1.5.0",
     "@rsbuild/plugin-react": "^1.4.2",
     "@rsbuild/plugin-svgr": "^1.2.3",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/user-event": "^14.6.1",
     "@types/express": "^4.17.21",
     "@types/lodash": "^4.17.21",
     "@types/mdast": "^4.0.0",
@@ -124,14 +131,18 @@
     "@types/react-dom": "^18.3.5",
     "@types/react-window": "^1.8.8",
     "@types/unist": "^3.0.0",
+    "@vitejs/plugin-react": "^5.1.4",
     "autoprefixer": "^10.4.22",
+    "axios-mock-adapter": "^2.1.0",
     "express": "^4.18.2",
+    "jsdom": "^28.1.0",
     "postcss": "^8.5.6",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^3.7.4",
     "stylelint": "^16.26.1",
     "stylelint-config-standard": "^39.0.1",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite-plugin-svgr": "^4.5.0"
   }
 }

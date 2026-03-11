@@ -14,39 +14,46 @@ export const flatToTreeData = (flatTreeData: any[], option: FlatTreeDataOption) 
   if (!_.isEmpty(option)) {
     const { keyField, titleField, parentKeyField, parentTitleField } = option
     const cloneFlatTreeData = _.cloneDeep(flatTreeData)
-    const treeDataSource: any[] = []
     const cacheMap: Record<string, any> = {}
+
+    // 第一次遍历：创建所有节点并放入缓存
     for (let i = 0; i < cloneFlatTreeData.length; i++) {
       const item = cloneFlatTreeData[i]
-
       const nodeKey = item[keyField] as string
-      const parentNodeKey = item[parentKeyField]
-      const parentNodeTitle = item[parentTitleField]
-
       cacheMap[nodeKey] = {
         ...item,
         children: cacheMap[nodeKey]?.children ?? [],
       }
+    }
+
+    const treeDataSource: any[] = []
+    // 第二次遍历：建立父子关系
+    for (let i = 0; i < cloneFlatTreeData.length; i++) {
+      const item = cloneFlatTreeData[i]
+      const nodeKey = item[keyField] as string
+      const parentNodeKey = item[parentKeyField]
+      const parentNodeTitle = item[parentTitleField]
+
+      const currentNode = cacheMap[nodeKey]
+
       if (!parentNodeKey) {
-        // 说明是根节点
-        treeDataSource.push(cacheMap[nodeKey])
+        // 根节点
+        treeDataSource.push(currentNode)
       } else {
+        // 有父节点
         if (!cacheMap[parentNodeKey]) {
-          // 说明还没有遍历到当前节点的父节点，给个默认值  用于后面遍历到该父节点的时候  进行合并
+          // 父节点不存在于原数据中，自动创建
           cacheMap[parentNodeKey] = {
             [keyField]: parentNodeKey,
             [titleField]: parentNodeTitle,
             children: [],
           }
+          treeDataSource.push(cacheMap[parentNodeKey])
         }
-        cacheMap[parentNodeKey].children.push(cacheMap[nodeKey])
-        delete cacheMap[nodeKey]
+        cacheMap[parentNodeKey].children.push(currentNode)
       }
     }
-    if (treeDataSource.length === 0) {
-      // 说明没有根节点
-      return Object.values(cacheMap)
-    }
+
     return treeDataSource
   }
   return []

@@ -1,9 +1,8 @@
 export const isJSONString = (str: string) => {
   try {
-    if (JSON.parse(str) instanceof Object) {
-      return true
-    }
+    JSON.parse(str);
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
