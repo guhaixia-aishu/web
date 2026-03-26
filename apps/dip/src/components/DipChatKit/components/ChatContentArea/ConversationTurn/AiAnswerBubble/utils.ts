@@ -93,6 +93,12 @@ const normalizeArchiveSubpath = (rawSubpath: unknown, rawArchiveRoot: unknown): 
   return segments.slice(2).join('/')
 }
 
+const normalizeArchiveRoot = (rawArchiveRoot: unknown): string => {
+  return toTextFromUnknown(rawArchiveRoot)
+    .trim()
+    .replace(/^\/+|\/+$/g, '')
+}
+
 const resolveFileNameFromSubpath = (subpath: string, fallbackName: unknown): string => {
   const name = toTextFromUnknown(fallbackName).trim()
   if (name) return name
@@ -121,6 +127,7 @@ export const buildArchiveGridPreviewPayload = (
 
   const fileName = resolveFileNameFromSubpath(normalizedSubpath, data.name)
   if (!fileName) return null
+  const archiveRoot = normalizeArchiveRoot(data.archive_root)
 
   return {
     title: intl
@@ -132,6 +139,7 @@ export const buildArchiveGridPreviewPayload = (
       sessionKey: normalizedSessionKey,
       subpath: normalizedSubpath,
       fileName,
+      archiveRoot,
     },
   }
 }

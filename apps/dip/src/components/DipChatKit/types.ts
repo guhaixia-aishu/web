@@ -17,6 +17,7 @@ export interface DipChatKitPreviewPayload {
     sessionKey: string
     subpath: string
     fileName: string
+    archiveRoot?: string
   }
 }
 

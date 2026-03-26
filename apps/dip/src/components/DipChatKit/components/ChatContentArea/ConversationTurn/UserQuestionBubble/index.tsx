@@ -72,6 +72,9 @@ const UserQuestionBubble: React.FC<UserQuestionBubbleProps> = ({
         placement="end"
         editable={{ editing }}
         styles={{
+          content: {
+            background: '#F4F7FA',
+          },
           footer: {
             marginBlockStart: 6,
           },

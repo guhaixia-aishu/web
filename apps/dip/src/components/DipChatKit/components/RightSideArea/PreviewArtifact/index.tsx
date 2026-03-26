@@ -1,13 +1,17 @@
-import { Spin } from 'antd'
+import { CloseOutlined, DownloadOutlined } from '@ant-design/icons'
+import { CodeHighlighter } from '@ant-design/x'
+import { Avatar, Button, Segmented, Spin, Tooltip, message } from 'antd'
 import clsx from 'clsx'
 import type React from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import intl from 'react-intl-universal'
 import { getSessionArchiveSubpath } from '../../../apis'
+import ScrollContainer from '../../ScrollContainer'
 import styles from './index.module.less'
 import type { PreviewArtifactProps } from './types'
 
 type ArtifactPreviewMode = 'text' | 'html' | 'image' | 'pdf'
+type ArtifactPreviewTab = 'preview' | 'code'
 
 interface ArtifactPreviewState {
   loading: boolean
@@ -39,6 +43,8 @@ const resolvePreviewMode = (fileName: string): ArtifactPreviewMode => {
 }
 
 const getBlobMimeType = (mode: ArtifactPreviewMode, fileName: string): string => {
+  if (mode === 'html') return 'text/html;charset=utf-8'
+  if (mode === 'text') return 'text/plain;charset=utf-8'
   if (mode === 'image') {
     const ext = getFileExtension(fileName)
     if (ext === 'svg') return 'image/svg+xml'
@@ -59,7 +65,15 @@ const createInitialState = (): ArtifactPreviewState => ({
   blobUrl: '',
 })
 
-const PreviewArtifact: React.FC<PreviewArtifactProps> = ({ payload }) => {
+const resolveFileInitial = (fileName: string): string => {
+  const normalized = fileName.trim()
+  if (!normalized) return '#'
+  return normalized.slice(0, 1).toUpperCase()
+}
+
+const PreviewArtifact: React.FC<PreviewArtifactProps> = ({ payload, onClose }) => {
+  const [activeTab, setActiveTab] = useState<ArtifactPreviewTab>('preview')
+  const [downloading, setDownloading] = useState(false)
   const [state, setState] = useState<ArtifactPreviewState>(createInitialState)
 
   const artifactInfo = payload.artifact
@@ -78,6 +92,14 @@ const PreviewArtifact: React.FC<PreviewArtifactProps> = ({ payload }) => {
       mode: resolvePreviewMode(fileName),
     }
   }, [artifactInfo])
+
+  const canSwitchCodeTab = state.mode === 'html' || state.mode === 'text'
+
+  useEffect(() => {
+    if (activeTab === 'code' && !canSwitchCodeTab) {
+      setActiveTab('preview')
+    }
+  }, [activeTab, canSwitchCodeTab])
 
   useEffect(() => {
     if (!previewMeta) {
@@ -180,65 +202,167 @@ const PreviewArtifact: React.FC<PreviewArtifactProps> = ({ payload }) => {
     }
   }, [previewMeta])
 
-  if (state.loading) {
-    return (
-      <div className={clsx('PreviewArtifact', styles.root)}>
+  const handleDownload = async () => {
+    if (!previewMeta) return
+
+    setDownloading(true)
+    try {
+      const response = await getSessionArchiveSubpath(previewMeta.sessionKey, previewMeta.subpath, {
+        responseType: 'arraybuffer',
+      })
+      if (!(response instanceof ArrayBuffer)) {
+        throw new Error(
+          intl.get('dipChatKit.archiveFileTypeMismatch').d('归档文件返回类型异常') as string,
+        )
+      }
+
+      const blob = new Blob([response], { type: getBlobMimeType(previewMeta.mode, previewMeta.fileName) })
+      const blobUrl = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = blobUrl
+      anchor.download = previewMeta.fileName
+      anchor.style.display = 'none'
+      document.body.appendChild(anchor)
+      anchor.click()
+      anchor.remove()
+      URL.revokeObjectURL(blobUrl)
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error && error.message
+          ? error.message
+          : (intl.get('dipChatKit.archivePreviewLoadFailed').d('归档文件加载失败') as string)
+      message.error(errorMessage)
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  const tabOptions = useMemo(
+    () => [
+      {
+        label: intl.get('dipChatKit.artifactTabPreview').d('预览') as string,
+        value: 'preview',
+      },
+      {
+        label: intl.get('dipChatKit.artifactTabCode').d('代码') as string,
+        value: 'code',
+        disabled: !canSwitchCodeTab,
+      },
+    ],
+    [canSwitchCodeTab],
+  )
+
+  const renderBody = () => {
+    if (state.loading) {
+      return (
         <div className={styles.center}>
           <Spin />
         </div>
-      </div>
-    )
-  }
+      )
+    }
 
-  if (state.error) {
-    return (
-      <div className={clsx('PreviewArtifact', styles.root)}>
-        <div className={styles.errorText}>{state.error}</div>
-      </div>
-    )
-  }
+    if (state.error) {
+      return <div className={styles.errorText}>{state.error}</div>
+    }
 
-  if (state.mode === 'html') {
-    return (
-      <div className={clsx('PreviewArtifact', styles.root)}>
+    if (activeTab === 'code' && canSwitchCodeTab) {
+      return (
+        <div className={styles.codeWrap}>
+          <CodeHighlighter lang={state.mode === 'html' ? 'html' : 'text'}>
+            {state.textContent}
+          </CodeHighlighter>
+        </div>
+      )
+    }
+
+    if (state.mode === 'html') {
+      return (
         <iframe
           className={styles.htmlFrame}
           title={payload.title || previewMeta?.fileName || 'artifact-html-preview'}
           srcDoc={state.textContent}
         />
-      </div>
-    )
-  }
+      )
+    }
 
-  if (state.mode === 'image') {
-    return (
-      <div className={clsx('PreviewArtifact', styles.root)}>
+    if (state.mode === 'image') {
+      return (
         <img
           className={styles.imagePreview}
           src={state.blobUrl}
           alt={previewMeta?.fileName || (intl.get('dipChatKit.artifactImage').d('归档图片') as string)}
         />
-      </div>
-    )
-  }
+      )
+    }
 
-  if (state.mode === 'pdf') {
-    return (
-      <div className={clsx('PreviewArtifact', styles.root)}>
+    if (state.mode === 'pdf') {
+      return (
         <iframe
           className={styles.pdfFrame}
           title={payload.title || previewMeta?.fileName || 'artifact-pdf-preview'}
           src={state.blobUrl}
         />
+      )
+    }
+
+    return (
+      <div className={styles.codeWrap}>
+        <CodeHighlighter lang="text">{state.textContent}</CodeHighlighter>
       </div>
     )
   }
 
+  const fileName = previewMeta?.fileName || ''
+
   return (
     <div className={clsx('PreviewArtifact', styles.root)}>
-      <pre className={styles.textContent}>{state.textContent}</pre>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <Avatar className={styles.fileAvatar} size={24}>
+            {resolveFileInitial(fileName)}
+          </Avatar>
+          <Tooltip title={fileName}>
+            <span className={styles.fileName}>{fileName}</span>
+          </Tooltip>
+        </div>
+        <div className={styles.headerCenter}>
+          <Segmented
+            size="small"
+            value={activeTab}
+            options={tabOptions}
+            onChange={(value) => {
+              setActiveTab(value as ArtifactPreviewTab)
+            }}
+          />
+        </div>
+        <div className={styles.headerRight}>
+          <Tooltip title={intl.get('dipChatKit.artifactDownload').d('下载文件')}>
+            <Button
+              type="text"
+              aria-label={intl.get('dipChatKit.artifactDownload').d('下载文件') as string}
+              icon={<DownloadOutlined />}
+              loading={downloading}
+              onClick={() => {
+                void handleDownload()
+              }}
+            />
+          </Tooltip>
+          <Tooltip title={intl.get('dipChatKit.closePreview').d('关闭预览')}>
+            <Button
+              type="text"
+              aria-label={intl.get('dipChatKit.closePreview').d('关闭预览') as string}
+              icon={<CloseOutlined />}
+              onClick={onClose}
+            />
+          </Tooltip>
+        </div>
+      </div>
+      <div className={styles.body}>
+        <ScrollContainer className={styles.bodyScroll}>{renderBody()}</ScrollContainer>
+      </div>
     </div>
   )
 }
 
 export default PreviewArtifact
+

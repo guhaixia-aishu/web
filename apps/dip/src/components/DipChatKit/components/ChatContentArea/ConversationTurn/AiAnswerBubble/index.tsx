@@ -13,6 +13,7 @@ import type React from 'react'
 import { Children, useMemo } from 'react'
 import intl from 'react-intl-universal'
 import MessageActions from '../MessageActions'
+import ArtifactMessageCard from './ArtifactMessageCard'
 import type { MessageAction } from '../MessageActions/types'
 import styles from './index.module.less'
 import type { AiAnswerBubbleProps, DipChatKitToolCardItem } from './types'
@@ -127,12 +128,26 @@ const AiAnswerBubble: React.FC<AiAnswerBubbleProps> = ({ turn, onCopy, onRegener
         )
       }
 
+      const artifactPreviewPayload = buildArchiveGridPreviewPayload(turn.sessionKey, codeText)
+      if (artifactPreviewPayload?.artifact) {
+        return (
+          <div className={styles.blockCodeWrap}>
+            <ArtifactMessageCard
+              fileName={artifactPreviewPayload.artifact.fileName}
+              archiveRoot={artifactPreviewPayload.artifact.archiveRoot || ''}
+              onClick={() => {
+                onOpenPreview(artifactPreviewPayload)
+              }}
+            />
+          </div>
+        )
+      }
+
       return (
         <div
           className={styles.blockCodeWrap}
           onClick={() => {
-            const artifactPreviewPayload = buildArchiveGridPreviewPayload(turn.sessionKey, codeText)
-            onOpenPreview(artifactPreviewPayload ?? buildCodePreviewPayload(language, codeText))
+            onOpenPreview(buildCodePreviewPayload(language, codeText))
           }}
           role="presentation"
         >
@@ -356,6 +371,9 @@ const AiAnswerBubble: React.FC<AiAnswerBubbleProps> = ({ turn, onCopy, onRegener
           typing={turn.answerStreaming ? { effect: 'fade-in' } : false}
           loading={turn.answerLoading && isEmpty(turn.answerMarkdown)}
           styles={{
+            content: {
+              background: 'transparent',
+            },
             footer: {
               marginBlockStart: 6,
             },
