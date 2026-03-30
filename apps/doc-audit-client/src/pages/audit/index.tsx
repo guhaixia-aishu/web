@@ -3,14 +3,16 @@ import classNames from 'classnames';
 import { Tabs, Badge as AntBadge } from 'antd';
 import { t } from '@/i18n';
 import { setSearchParam, getSearchParam } from '@/utils/url-search-params';
-import { fetchTodoCount } from '@/api/doc-audit-rest';
-import { useAppStore } from '@/store';
+import { fetchTodoPage } from '@/api/doc-audit-rest';
+import { useDictStore, useAppStore } from '@/store';
 import { AuditListMode, type AuditTabKey } from './types';
+import { collectAuditTypesFromBizTypes, transformTypeParam } from './utils';
 import AuditList from './AuditList';
 import styles from './index.module.less';
 
 const AuditIndex: React.FC = () => {
   const context = useAppStore(s => s.context);
+  const dictList = useDictStore(s => s.dictList);
   const [activeTab, setActiveTab] = useState<AuditTabKey>('todo');
   const [todoCount, setTodoCount] = useState(0);
 
@@ -24,8 +26,12 @@ const AuditIndex: React.FC = () => {
 
   const loadTodoCount = async () => {
     try {
-      const res = await fetchTodoCount();
-      setTodoCount(res.count);
+      const res = await fetchTodoPage({
+        offset: 0,
+        limit: 1,
+        type: transformTypeParam(context?.applicationType || '', collectAuditTypesFromBizTypes(dictList.bizTypes)),
+      });
+      setTodoCount(res.total_count || 0);
     } catch (error) {
       console.error('Failed to fetch todo count:', error);
     }

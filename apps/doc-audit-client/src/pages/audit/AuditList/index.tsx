@@ -20,6 +20,7 @@ import { getBizTypeColumnText } from '@/utils/biz-type';
 import AuditDetail from '../AuditDetail';
 import type { AuditRecord, DictItem, QueryParams } from '@/types';
 import { AuditListMode } from '../types';
+import { collectAuditTypesFromBizTypes, transformTypeParam } from '../utils';
 import type { AuditListProps, ListRecord, StatusFilter } from './types';
 import styles from './index.module.less';
 import { t } from '@/i18n';
@@ -58,33 +59,6 @@ function getApplyFirstAuditorId(record: ListRecord) {
   const list = getApplyAuditorList(record);
   if (!list || list.length === 0) return '';
   return list[0]?.id || '';
-}
-
-function collectAuditTypesFromBizTypes(bizTypes: DictItem[]): string[] {
-  const types: string[] = [];
-  bizTypes.forEach(item => {
-    if (Array.isArray(item.children) && item.children.length > 0) {
-      item.children.forEach(child => {
-        if (child.value) types.push(child.value);
-      });
-      return;
-    }
-    if (item.value) types.push(item.value);
-  });
-  return [...new Set(types)];
-}
-
-function transformTypeParam(type: string, auditTypes: string[]): string {
-  if (!type && auditTypes.length > 0) {
-    if (auditTypes.includes('realname')) {
-      return ['perm', 'owner', 'inherit', ...auditTypes].join(',');
-    }
-    return auditTypes.join(',');
-  }
-  if (type === 'realname') {
-    return ['realname', 'perm', 'owner', 'inherit'].join(',');
-  }
-  return type;
 }
 
 const AuditList: React.FC<AuditListProps> = ({ mode, onRefresh }) => {
