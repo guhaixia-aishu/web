@@ -191,7 +191,7 @@ const AuditList: React.FC<AuditListProps> = ({ mode, onRefresh }) => {
     { label: t('common.auditStatuss.pass'), value: 'pass' },
     { label: t('common.auditStatuss.undone'), value: 'undone' },
     { label: t('common.auditStatuss.transfer'), value: 'transfer' },
-    { label: t('common.auditStatuss.sendback'), value: 'sendback' },
+    // { label: t('common.auditStatuss.sendback'), value: 'sendback' },
   ];
 
   const applyStatusOptions: Array<{ label: string; value: StatusFilter }> = [
@@ -200,7 +200,7 @@ const AuditList: React.FC<AuditListProps> = ({ mode, onRefresh }) => {
     { label: t('common.auditStatuss.reject'), value: 'reject' },
     { label: t('common.auditStatuss.pass'), value: 'pass' },
     { label: t('common.auditStatuss.undone'), value: 'undone' },
-    { label: t('common.auditStatuss.sendback'), value: 'sendback' },
+    // { label: t('common.auditStatuss.sendback'), value: 'sendback' },
   ];
 
   const bizTypeOptions = useMemo(
