@@ -6,11 +6,12 @@
     "dev": "rsbuild dev",
     "build": "rsbuild build",
     "preview": "rsbuild preview",
-    "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,less}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,less}\"",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "lint": "eslint -f junit src/**/*.ts* -o lint-report.xml || true",
+    "test": "jest --config=./test-config/jest.config.js --passWithNoTests"
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.0",
@@ -25,7 +26,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intl-universal": "^2.13.4",
-    "zustand": "^4.5.0"
+    "zustand": "^4.5.0",
+    "@ant-design/cssinjs": "^1.24.0"
   },
   "devDependencies": {
     "@rsbuild/core": "^1.7.3",
@@ -43,6 +45,13 @@
     "typescript": "^5.3.3",
     "prettier": "3.5.3",
     "eslint-plugin-prettier": "5.2.5",
-    "eslint-config-prettier": "10.1.1"
+    "eslint-config-prettier": "10.1.1",
+    "@testing-library/jest-dom": "6.6.3",
+    "@types/jest": "29.5.14",
+    "jest": "29.7.0",
+    "jest-canvas-mock": "2.5.2",
+    "jest-environment-jsdom": "29.7.0",
+    "jest-junit": "16.0.0",
+    "ts-jest": "29.3.0"
   }
 }

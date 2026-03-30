@@ -6,7 +6,7 @@ import path from 'path';
 import { name } from './package.json';
 
 const packageName = name.split('/')[1];
-const TEMPLATE_PATH = './public/index.html'; // HTML 模板路径
+const TEMPLATE_PATH = './templates/index.html'; // HTML 模板路径
 
 declare const process: {
   env: {
@@ -54,6 +54,7 @@ export default defineConfig({
 
   html: {
     template: TEMPLATE_PATH,
+    mountId: packageName + '-root', // 修改根元素的 id
   },
 
   output: {
