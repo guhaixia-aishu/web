@@ -1,5 +1,7 @@
 import './public-path';
 import { createRoot, type Root } from 'react-dom/client';
+import { apis } from '@aishu-tech/components/dist/dip-components.min';
+import '@aishu-tech/components/dist/dip-components.min.css';
 import App from './App';
 import { useAppStore } from './store';
 import { setConfig as setHttpConfig, LangType } from '@/utils/http';
@@ -17,16 +19,13 @@ declare global {
 
 let root: Root | null = null;
 
-function getContainer(container?: HTMLElement): HTMLElement {
+function getPopupContainer(container?: HTMLElement): HTMLElement {
   const rootId = 'doc-audit-client-root';
   return container?.querySelector(`#${rootId}`) || document.getElementById(rootId)!;
 }
 
-function render(props: { container?: HTMLElement } = {}) {
-  const { container } = props;
-  const mountNode = getContainer(container);
-
-  root = createRoot(mountNode);
+function render(popupContainer: HTMLElement) {
+  root = createRoot(popupContainer);
   root.render(<App />);
 }
 
@@ -36,9 +35,10 @@ export async function bootstrap() {}
 // qiankun 生命周期 - mount
 export async function mount(context: AppContext) {
   const { setContext, setMicroWidgetProps, setArbitrailyAuditLog, setLang, setPopupContainer } = useAppStore.getState();
+  const popupContainer = getPopupContainer((context as any).container);
 
   setContext(context);
-  setPopupContainer((context as { container?: HTMLElement }).container || document.body);
+  setPopupContainer(popupContainer);
 
   const { microWidgetProps } = context;
 
@@ -61,6 +61,8 @@ export async function mount(context: AppContext) {
     const refreshToken = microWidgetProps.token.refreshOauth2Token;
     const onTokenExpired = microWidgetProps.token.onTokenExpired;
     const businessDomainID = microWidgetProps.businessDomainID || '';
+    const theme = microWidgetProps.config.getTheme.normal || '#126ee3';
+
     setHttpConfig({
       protocol,
       host,
@@ -72,11 +74,23 @@ export async function mount(context: AppContext) {
       onTokenExpired,
       businessDomainID,
     });
+
+    // 设置dip-components所需的信息
+    apis.setup({
+      protocol,
+      host,
+      port,
+      lang: language as LangType,
+      prefix,
+      getToken,
+      refreshToken,
+      onTokenExpired,
+      theme,
+      popupContainer,
+    });
   }
 
-  render({
-    container: (context as { container?: HTMLElement }).container,
-  });
+  render(popupContainer);
 }
 
 // qiankun 生命周期 - unmount

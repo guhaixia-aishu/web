@@ -39,3 +39,5 @@ declare module '*.less' {
   export default classes;
   export = classes;
 }
+
+declare module '@aishu-tech/components/dist/dip-components.min';

@@ -38,6 +38,7 @@ import StampRejectEn from '@/assets/stamp_reject_en.svg';
 import StampUndoZh from '@/assets/stamp_undo_zh.svg';
 import StampUndoTw from '@/assets/stamp_undo_tw.svg';
 import StampUndoEn from '@/assets/stamp_undo_en.svg';
+import { selectUser } from '@/utils/user';
 
 /** 与 doc-audit-client detail.vue checkTransferBtn 一致 */
 function checkTransferBtn(
@@ -615,48 +616,15 @@ const AuditDetail: React.FC<AuditDetailProps> = ({
   };
 
   const chooseTransferAuditor = async () => {
-    const menu = (microWidgetProps as any)?.contextMenu;
-    const addAccessorFn = menu?.addAccessorFn;
-    const systemType = (context as any)?.systemType;
-    const baseParams = {
-      functionid: 'chooseAuditor',
-      title: t('common.detail.transfer.select'),
-      selectPermission: 2,
-      groupOptions: { select: 3, drillDown: 1 },
-      multiple: false,
-      isSelectOwn: false,
-      selectedVisitorsCustomLabel: t('common.detail.operation.selected'),
-    };
     try {
-      let result: unknown[] = [];
-      if (systemType && systemType === 'adp' && addAccessorFn?.mountComponent) {
-        // 对齐 Vue：ADP 走 AccessorPicker 挂载模式
-        result = await new Promise<unknown[]>(resolve => {
-          const unmount = addAccessorFn.mountComponent(
-            menu?.components?.AccessorPicker,
-            {
-              range: ['user'],
-              tabs: ['organization'],
-              title: t('common.detail.transfer.select'),
-              isAdmin: false,
-              isSelectOwn: false,
-              multiple: false,
-              onSelect: (selections: unknown[]) => {
-                resolve(selections && selections.length > 0 ? [selections[0]] : []);
-                unmount?.();
-              },
-              onCancel: () => {
-                resolve([]);
-                unmount?.();
-              },
-            },
-            document.createElement('div')
-          );
-        });
-      } else {
-        // 对齐 Vue：AS/AF 走 addAccessorFn(params)
-        result = (await addAccessorFn(baseParams)) as unknown[];
-      }
+      const result = await selectUser({
+        range: ['user'],
+        tabs: ['organization'],
+        title: t('common.detail.transfer.select'),
+        isAdmin: false,
+        isSelectOwn: false,
+        multiple: false,
+      });
       const picked = normalizePickedUsers(Array.isArray(result) ? result : []);
       if (picked.length === 0) return;
       const pickedOne = picked[0];
@@ -693,33 +661,14 @@ const AuditDetail: React.FC<AuditDetailProps> = ({
       selectedVisitorsCustomLabel: t('common.detail.operation.selected'),
     };
     try {
-      let result: unknown[] = [];
-      if (systemType && systemType === 'adp' && addAccessorFn?.mountComponent) {
-        result = await new Promise<unknown[]>(resolve => {
-          const unmount = addAccessorFn.mountComponent(
-            menu?.components?.AccessorPicker,
-            {
-              range: ['user'],
-              tabs: ['organization'],
-              title: t('common.detail.operation.countersign'),
-              isAdmin: false,
-              isSelectOwn: false,
-              multiple: true,
-              onSelect: (selections: unknown[]) => {
-                resolve(selections || []);
-                unmount?.();
-              },
-              onCancel: () => {
-                resolve([]);
-                unmount?.();
-              },
-            },
-            document.createElement('div')
-          );
-        });
-      } else {
-        result = (await addAccessorFn(baseParams)) as unknown[];
-      }
+      const result = await selectUser({
+        range: ['user'],
+        tabs: ['organization'],
+        title: t('common.detail.operation.countersign'),
+        isAdmin: false,
+        isSelectOwn: false,
+        multiple: true,
+      });
       const picked = normalizePickedUsers(Array.isArray(result) ? result : []);
       if (picked.length === 0) return;
 

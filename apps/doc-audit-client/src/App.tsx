@@ -21,6 +21,7 @@ const localeMap: Record<string, typeof zhCN> = {
 
 const App: React.FC<AppProps> = () => {
   const lang = useAppStore(s => s.lang);
+  const context = useAppStore(s => s.context);
   const popupContainer = useAppStore(s => s.popupContainer);
   const locale = localeMap[lang] || zhCN;
   const microWidgetProps = useAppStore(s => s.microWidgetProps);
@@ -32,6 +33,13 @@ const App: React.FC<AppProps> = () => {
   message.config({
     getContainer: () => popupContainer!,
   });
+
+  if (context?.systemType !== 'adp') {
+    // 智能找数，设置消息框距离顶部距离
+    message.config({
+      top: 68,
+    });
+  }
 
   return (
     <StyleProvider hashPriority="high">

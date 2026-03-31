@@ -27,7 +27,8 @@
     "react-dom": "^18.2.0",
     "react-intl-universal": "^2.13.4",
     "zustand": "^4.5.0",
-    "@ant-design/cssinjs": "^1.24.0"
+    "@ant-design/cssinjs": "^1.24.0",
+    "@aishu-tech/components": "^1.0.1"
   },
   "devDependencies": {
     "@rsbuild/core": "^1.7.3",
