@@ -25,6 +25,19 @@ import styles from './index.module.less';
 import { t } from '@/i18n';
 
 const builtInAbstractIcons = new Set(['file', 'folder', 'multiple', 'autosheet', 'article', 'group']);
+const PAGE_SIZE_STORAGE_PREFIX = 'doc-audit-client.audit-list.page-size.';
+
+function getPageSizeStorageKey(mode: AuditListMode, systemType?: string) {
+  return `${PAGE_SIZE_STORAGE_PREFIX}${systemType || 'default'}.${mode}`;
+}
+
+function getStoredPageSize(mode: AuditListMode, systemType?: string): number {
+  if (typeof window === 'undefined') return 50;
+  const raw = window.localStorage.getItem(getPageSizeStorageKey(mode, systemType));
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed) || parsed <= 0) return 50;
+  return parsed;
+}
 
 function getApplyAuditorList(record: ListRecord) {
   const auditors = record.auditors;
@@ -75,11 +88,11 @@ const AuditList: React.FC<AuditListProps> = ({ mode, onRefresh }) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
 
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState(() => ({
     current: 1,
-    pageSize: 50,
+    pageSize: getStoredPageSize(mode, context?.systemType),
     total: 0,
-  });
+  }));
   const [applyType, setApplyType] = useState<string[]>(context?.applicationType ? [context.applicationType] : ['']);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('');
   const [searchValue, setSearchValue] = useState<Array<{ type: string; val: string }>>([]);
@@ -250,6 +263,11 @@ const AuditList: React.FC<AuditListProps> = ({ mode, onRefresh }) => {
   useEffect(() => {
     void fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(getPageSizeStorageKey(mode, context?.systemType), String(pagination.pageSize));
+  }, [mode, context?.systemType, pagination.pageSize]);
 
   useEffect(() => {
     const updateTableHeight = () => {
