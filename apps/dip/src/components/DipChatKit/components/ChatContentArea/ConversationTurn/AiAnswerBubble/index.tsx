@@ -788,6 +788,7 @@ const AiAnswerBubble: React.FC<AiAnswerBubbleProps> = ({
 
     const panelKey = `tool_process_panel_${segment.id}_${index}`
     const inProgress = isToolSegmentInProgress(segment.events)
+    const keepExpandedUntilStreamDone = turn.answerStreaming
     const toolCalledText = intl
       .get('dipChatKit.toolCalledCount', { count: segmentToolCards.length })
       .d(`调用了${segmentToolCards.length}个工具`) as string
@@ -795,10 +796,10 @@ const AiAnswerBubble: React.FC<AiAnswerBubbleProps> = ({
     return (
       <Collapse
         className={styles.chatToolsCollapse}
-        key={`${panelKey}_${inProgress ? 'running' : 'done'}`}
+        key={`${panelKey}_${keepExpandedUntilStreamDone ? 'streaming' : 'done'}`}
         ghost
         expandIconPosition="start"
-        defaultActiveKey={inProgress ? [panelKey] : []}
+        defaultActiveKey={keepExpandedUntilStreamDone ? [panelKey] : []}
         items={[
           {
             key: panelKey,
