@@ -1,7 +1,13 @@
 import type { ReactNode } from 'react'
 
-export type HeaderType = 'store' | 'studio' | 'micro-app' | 'home' | 'initial-configuration'
-export type SiderType = 'store' | 'home' | 'studio'
+export type HeaderType =
+  | 'store'
+  | 'studio'
+  | 'micro-app'
+  | 'home'
+  | 'initial-configuration'
+  | 'business'
+export type SiderType = 'store' | 'home' | 'studio' | 'business'
 
 /**
  * 路由在侧栏 / 「按 sider 取首条可访问路由」中的参与方式

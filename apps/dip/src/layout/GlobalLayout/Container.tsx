@@ -18,7 +18,8 @@ const SIDER_WIDTH = 240
 const SIDER_COLLAPSED_WIDTH = 52
 
 const Container = ({ children }: ContainerProps) => {
-  const { collapsed, setCollapsed } = useGlobalLayoutStore()
+  const { collapsed, setCollapsed, businessSiderHidden } =
+    useGlobalLayoutStore()
   const matches = useMatches()
   // const params = useParams()
   const { currentMicroApp } = useMicroAppStore()
@@ -60,6 +61,9 @@ const Container = ({ children }: ContainerProps) => {
     headerType = 'home',
   } = layoutConfig || {}
 
+  const showSider =
+    hasSider && !(siderType === 'business' && businessSiderHidden)
+
   const headerHeight = 52
 
   return (
@@ -83,7 +87,7 @@ const Container = ({ children }: ContainerProps) => {
             minHeight: 0,
           }}
         >
-          {hasSider && (
+          {showSider && (
             <div
               style={{
                 position: 'absolute',
@@ -104,7 +108,11 @@ const Container = ({ children }: ContainerProps) => {
           )}
           <div
             style={{
-              marginLeft: hasSider ? (collapsed ? SIDER_COLLAPSED_WIDTH : SIDER_WIDTH) : 0,
+              marginLeft: showSider
+                ? collapsed
+                  ? SIDER_COLLAPSED_WIDTH
+                  : SIDER_WIDTH
+                : 0,
               height: hasHeader ? `calc(100vh - ${headerHeight}px)` : '100vh',
               transition: 'margin-left 0.2s',
             }}

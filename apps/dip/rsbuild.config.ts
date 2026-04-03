@@ -1,32 +1,61 @@
-import { defineConfig } from '@rsbuild/core'
-import { pluginReact } from '@rsbuild/plugin-react'
-import { pluginLess } from '@rsbuild/plugin-less'
-import { pluginSvgr } from '@rsbuild/plugin-svgr'
-import { Agent as HttpsAgent } from 'https'
-import { rsbuildMiddlewarePlugin } from './rsbuild-plugin-middleware'
+import { defineConfig } from "@rsbuild/core";
+import { pluginReact } from "@rsbuild/plugin-react";
+import { pluginLess } from "@rsbuild/plugin-less";
+import { pluginSvgr } from "@rsbuild/plugin-svgr";
+import { Agent as HttpsAgent } from "https";
+import { rsbuildMiddlewarePlugin } from "./rsbuild-plugin-middleware";
 
 // 开发环境代理到 HTTPS 后端时，使用自定义 Agent 忽略自签名证书校验，避免 ECONNRESET
-const isHttpsTarget = process.env.DEBUG_ORIGIN?.startsWith('https://')
+const isHttpsTarget = process.env.DEBUG_ORIGIN?.startsWith("https://");
 const proxyAgent = isHttpsTarget
   ? new HttpsAgent({ rejectUnauthorized: false })
-  : undefined
+  : undefined;
 
 const proxyBase = {
   target: process.env.DEBUG_ORIGIN,
   changeOrigin: true,
   secure: false,
   ...(proxyAgent && { agent: proxyAgent }),
-}
+};
+
+const microAppProxy = {
+  target: process.env.DEBUG_ORIGIN?.replace("/dip-hub", ""),
+  changeOrigin: true,
+  secure: false,
+};
+const microAppProxyPaths = [
+  // "/agent-web",
+  "/vega",
+  "/flow-web",
+  "/operator-web",
+  "/doc-audit-client",
+  "/workflow-manage-client",
+  "/api/agent-factory",
+  "/api/user-management",
+  "/api/business-system",
+  "/api/authorization",
+  "/api/agent-operator-integration",
+  "/api/automation",
+  "/api/document",
+  "/api/appstore",
+  "/api/doc-audit-rest",
+  "/api/workflow-rest",
+  "/api/ontology-manager",
+  "/api/mdl-data-model",
+  "/api/data-connection",
+  "/api/eacp",
+  "/api/audit-log",
+];
 
 // Docs: https://rsbuild.rs/config/
 // 确保 assetPrefix 始终以 / 结尾，而 BASE_PATH 不带尾部斜杠
-const rawPublicPath = process.env.PUBLIC_PATH || '/dip-hub/'
-const assetPrefix = rawPublicPath.endsWith('/')
+const rawPublicPath = process.env.PUBLIC_PATH || "/dip-hub/";
+const assetPrefix = rawPublicPath.endsWith("/")
   ? rawPublicPath
-  : `${rawPublicPath}/`
-const basePath = assetPrefix.endsWith('/')
+  : `${rawPublicPath}/`;
+const basePath = assetPrefix.endsWith("/")
   ? assetPrefix.slice(0, -1)
-  : assetPrefix
+  : assetPrefix;
 
 export default defineConfig({
   output: {
@@ -60,10 +89,23 @@ export default defineConfig({
     port: 3001,
     // 配置代理，解决远程微应用 CORS 问题
     proxy: {
+      // 微应用代理
+      ...microAppProxyPaths.reduce(
+        (acc, path) => ({
+          ...acc,
+          [path]: microAppProxy,
+        }),
+        {},
+      ),
+      // "/agent-web/": {
+      //   target: "http://localhost:1101",
+      //   changeOrigin: true,
+      //   secure: false,
+      // },
       // 开发环境：将 API 请求代理到远程服务器
       // 登录相关路由由中间件插件处理，不走代理
       "/api/dip-hub": {
-        ...proxyBase,
+        ...microAppProxy,
         // 排除登录相关路由，这些由中间件插件处理
         bypass(req) {
           const url = req.url || "";
@@ -80,9 +122,7 @@ export default defineConfig({
         },
       },
       "/api/dip-studio": proxyBase,
-      "/api/mdl-data-model": proxyBase,
-      "/api/agent-factory": proxyBase,
-      "/api/deploy-web-service": proxyBase,
+      "/api/deploy-web-service": microAppProxy,
       // 剩余所有 API 请求代理到 DEBUG_ORIGIN
       "/api/*": proxyBase,
       "/oauth2/*": proxyBase,
@@ -90,7 +130,15 @@ export default defineConfig({
   },
   plugins: [
     pluginReact(),
-    pluginLess(),
+    pluginLess({
+      lessLoaderOptions: {
+        lessOptions: {
+          modifyVars: {
+            "@ant-prefix": "dip",
+          },
+        },
+      },
+    }),
     pluginSvgr(),
     // 开发环境中间件插件：处理登录和服务转发
     rsbuildMiddlewarePlugin(),

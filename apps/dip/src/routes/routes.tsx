@@ -1,22 +1,40 @@
-import { lazy } from 'react'
-import applicationsUrl from '@/assets/images/sider/applications.svg'
-import appStoreUrl from '@/assets/images/sider/appStore.svg'
-import digitalHumanUrl from '@/assets/images/sider/digitalHuman.svg'
-import dipStudioUrl from '@/assets/images/sider/dipStudio.svg'
-import type { RouteConfig } from './types'
+import { lazy } from "react";
+import applicationsUrl from "@/assets/images/sider/applications.svg";
+import appStoreUrl from "@/assets/images/sider/appStore.svg";
+import digitalHumanUrl from "@/assets/images/sider/digitalHuman.svg";
+import dipStudioUrl from "@/assets/images/sider/dipStudio.svg";
+import {
+  BUSINESS_NETWORK_BASE_PATH,
+  businessLeafMenuItems,
+} from "@/components/Sider/BusinessSider/menus";
+import type { RouteConfig } from "./types";
 
-const MyApp = lazy(() => import('../pages/MyApp'))
-const AppStore = lazy(() => import('../pages/AppStore'))
-const Home = lazy(() => import('../pages/Home'))
-const WorkPlan = lazy(() => import('../pages/WorkPlan'))
-const WorkPlanDetail = lazy(() => import('../pages/WorkPlan/Details'))
-const History = lazy(() => import('../pages/History'))
-const HistoryConversation = lazy(() => import('../pages/History/HistoryConversation'))
-const DigitalHumanManagement = lazy(() => import('../pages/DigitalHuman/Management'))
-const DigitalHumanDetail = lazy(() => import('../pages/DigitalHuman/Details'))
-const DHSetting = lazy(() => import('../pages/DigitalHuman/DHSetting'))
-const Conversation = lazy(() => import('../pages/Conversation'))
-const InitialConfiguration = lazy(() => import('../pages/InitialConfiguration'))
+const MyApp = lazy(() => import("../pages/MyApp"));
+const AppStore = lazy(() => import("../pages/AppStore"));
+const Home = lazy(() => import("../pages/Home"));
+const WorkPlan = lazy(() => import("../pages/WorkPlan"));
+const WorkPlanDetail = lazy(() => import("../pages/WorkPlan/Details"));
+const History = lazy(() => import("../pages/History"));
+const HistoryConversation = lazy(
+  () => import("../pages/History/HistoryConversation"),
+);
+const DigitalHumanManagement = lazy(
+  () => import("../pages/DigitalHuman/Management"),
+);
+const DigitalHumanDetail = lazy(() => import("../pages/DigitalHuman/Details"));
+const DHSetting = lazy(() => import("../pages/DigitalHuman/DHSetting"));
+const Conversation = lazy(() => import("../pages/Conversation"));
+const InitialConfiguration = lazy(
+  () => import("../pages/InitialConfiguration"),
+);
+const BusinessNetwork = lazy(() => import("../pages/BusinessNetwork"));
+
+const businessLayoutConfig = {
+  hasSider: true,
+  hasHeader: true,
+  siderType: "business",
+  headerType: "business",
+} as const;
 
 /**
  * 路由配置数组
@@ -25,167 +43,167 @@ const InitialConfiguration = lazy(() => import('../pages/InitialConfiguration'))
 export const routeConfigs: RouteConfig[] = [
   // --- Home Section ---
   {
-    path: 'home',
-    key: 'home',
-    label: '首页',
+    path: "home",
+    key: "home",
+    label: "首页",
     iconUrl: dipStudioUrl,
     requiredRoleIds: [],
     element: <Home />,
-    sidebarMode: 'menu',
+    sidebarMode: "menu",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: false,
-        siderType: 'home',
-        headerType: 'home',
+        siderType: "home",
+        headerType: "home",
       },
     },
   },
 
   // --- AI Store Section ---
   {
-    path: 'store/my-app',
-    key: 'my-app',
-    label: '应用',
+    path: "store/my-app",
+    key: "my-app",
+    label: "应用",
     iconUrl: applicationsUrl,
     requiredRoleIds: [],
     element: <MyApp />,
-    sidebarMode: 'menu',
+    sidebarMode: "menu",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'store',
-        headerType: 'store',
+        siderType: "store",
+        headerType: "store",
       },
     },
   },
   {
-    path: 'store/app-store',
-    key: 'app-store',
-    label: '应用商店',
+    path: "store/app-store",
+    key: "app-store",
+    label: "应用商店",
     iconUrl: appStoreUrl,
     requiredRoleIds: [],
     element: <AppStore />,
-    sidebarMode: 'menu',
+    sidebarMode: "menu",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'store',
-        headerType: 'store',
+        siderType: "store",
+        headerType: "store",
       },
     },
   },
 
   // --- DIP Studio Section ---
   {
-    path: 'digital-human/management',
-    key: 'digital-human-management',
-    label: '我的数字员工',
+    path: "digital-human/management",
+    key: "digital-human-management",
+    label: "我的数字员工",
     iconUrl: digitalHumanUrl,
     element: <DigitalHumanManagement />,
-    sidebarMode: 'menu',
+    sidebarMode: "menu",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
   {
-    path: 'studio/conversation',
-    key: 'studio-conversation',
-    label: '会话',
+    path: "studio/conversation",
+    key: "studio-conversation",
+    label: "会话",
     iconUrl: dipStudioUrl,
     requiredRoleIds: [],
     element: <Conversation />,
-    sidebarMode: 'entry-only',
+    sidebarMode: "entry-only",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
   {
-    path: 'work-plan',
-    key: 'work-plan',
-    label: '工作计划',
+    path: "work-plan",
+    key: "work-plan",
+    label: "工作计划",
     iconUrl: dipStudioUrl,
     element: <WorkPlan />,
-    sidebarMode: 'hidden',
+    sidebarMode: "hidden",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
   {
-    path: 'work-plan/:workPlanId',
-    key: 'work-plan-item',
-    label: '工作计划详情',
+    path: "work-plan/:workPlanId",
+    key: "work-plan-item",
+    label: "工作计划详情",
     element: <WorkPlanDetail />,
-    sidebarMode: 'hidden',
+    sidebarMode: "hidden",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
   {
-    path: 'history',
-    key: 'history',
-    label: '历史记录',
+    path: "history",
+    key: "history",
+    label: "历史记录",
     iconUrl: dipStudioUrl,
     element: <History />,
-    sidebarMode: 'hidden',
+    sidebarMode: "hidden",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
   {
-    path: 'history/:sessionKey',
-    key: 'history-item',
-    label: '历史记录',
+    path: "history/:sessionKey",
+    key: "history-item",
+    label: "历史记录",
     element: <HistoryConversation />,
-    sidebarMode: 'hidden',
+    sidebarMode: "hidden",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
   {
-    path: 'digital-human/management/setting',
-    key: 'digital-human-setting-new',
-    label: '新建数字员工',
+    path: "digital-human/management/setting",
+    key: "digital-human-setting-new",
+    label: "新建数字员工",
     element: <DHSetting />,
-    sidebarMode: 'hidden',
+    sidebarMode: "hidden",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
@@ -236,48 +254,83 @@ export const routeConfigs: RouteConfig[] = [
   //   },
   // },
   {
-    path: 'digital-human/management/:digitalHumanId/setting',
-    key: 'digital-human-setting-item',
-    label: '数字员工配置',
+    path: "digital-human/management/:digitalHumanId/setting",
+    key: "digital-human-setting-item",
+    label: "数字员工配置",
     element: <DHSetting />,
-    sidebarMode: 'hidden',
+    sidebarMode: "hidden",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
   {
-    path: 'digital-human/management/:digitalHumanId',
-    key: 'digital-human-detail',
-    label: '数字员工详情',
+    path: "digital-human/management/:digitalHumanId",
+    key: "digital-human-detail",
+    label: "数字员工详情",
     element: <DigitalHumanDetail />,
-    sidebarMode: 'hidden',
+    sidebarMode: "hidden",
     handle: {
       layout: {
         hasSider: true,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
   {
-    path: 'initial-configuration',
-    key: 'initial-configuration',
-    label: '系统初始化配置',
+    path: "initial-configuration",
+    key: "initial-configuration",
+    label: "系统初始化配置",
     element: <InitialConfiguration />,
-    sidebarMode: 'hidden',
+    sidebarMode: "hidden",
     handle: {
       layout: {
         hasSider: false,
         hasHeader: true,
-        siderType: 'studio',
-        headerType: 'studio',
+        siderType: "studio",
+        headerType: "studio",
       },
     },
   },
-]
+  {
+    path: BUSINESS_NETWORK_BASE_PATH.replace(/^\//, ""),
+    key: "business-network",
+    label: "全局业务知识网络",
+    element: <BusinessNetwork />,
+    sidebarMode: "hidden",
+    handle: {
+      layout: businessLayoutConfig,
+    },
+  },
+  ...businessLeafMenuItems.flatMap((item): RouteConfig[] => {
+    const normalizedPath = item.path.replace(/^\//, "");
+    return [
+      {
+        path: normalizedPath,
+        key: item.key,
+        label: item.label,
+        element: <BusinessNetwork />,
+        sidebarMode: "hidden",
+        handle: {
+          layout: businessLayoutConfig,
+        },
+      },
+      {
+        path: `${normalizedPath}/*`,
+        key: `${item.key}-nested`,
+        label: item.label,
+        element: <BusinessNetwork />,
+        sidebarMode: "hidden",
+        handle: {
+          layout: businessLayoutConfig,
+        },
+      },
+    ];
+  }),
+];

@@ -5,6 +5,15 @@ interface GlobalLayoutState {
   collapsed: boolean
   setCollapsed: (collapsed: boolean) => void
   toggleCollapsed: () => void
+  /** 业务知识网络：子应用或 URL 可完全隐藏侧栏（非收起） */
+  businessSiderHidden: boolean
+  setBusinessSiderHidden: (hidden: boolean) => void
+  /** 业务知识网络：URL query hideHeaderPath=true 时隐藏顶栏面包屑（顶栏本身仍显示） */
+  businessHeaderBreadcrumbHidden: boolean
+  setBusinessHeaderBreadcrumbHidden: (hidden: boolean) => void
+  /** 业务知识网络：面包屑第三级动态标题（由业务微应用驱动） */
+  businessHeaderCustomBreadcrumbLabel: string | null
+  setBusinessHeaderCustomBreadcrumbLabel: (label: string | null) => void
 }
 
 export const useGlobalLayoutStore = create<GlobalLayoutState>((set) => ({
@@ -14,6 +23,14 @@ export const useGlobalLayoutStore = create<GlobalLayoutState>((set) => ({
     set((state) => ({
       collapsed: !state.collapsed,
     })),
+  businessSiderHidden: false,
+  setBusinessSiderHidden: (hidden) => set({ businessSiderHidden: hidden }),
+  businessHeaderBreadcrumbHidden: false,
+  setBusinessHeaderBreadcrumbHidden: (hidden) =>
+    set({ businessHeaderBreadcrumbHidden: hidden }),
+  businessHeaderCustomBreadcrumbLabel: null,
+  setBusinessHeaderCustomBreadcrumbLabel: (label) =>
+    set({ businessHeaderCustomBreadcrumbLabel: label }),
 }))
 
 /**
