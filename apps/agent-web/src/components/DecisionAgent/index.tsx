@@ -59,9 +59,15 @@ export { ModeEnum };
 
 interface DataAgentsProps {
   mode?: ModeEnum;
+  showHeader?: boolean;
+  showBg?: boolean;
 }
 
-const DecisionAgent = ({ mode: modeFromProps = ModeEnum.DataAgent }: DataAgentsProps) => {
+const DecisionAgent = ({
+  mode: modeFromProps = ModeEnum.DataAgent,
+  showHeader = true,
+  showBg = true,
+}: DataAgentsProps) => {
   const filterParams = useMemo(() => {
     const data = getParam('filterParams');
     const decodedData = decodeURIComponent(data);
@@ -74,7 +80,6 @@ const DecisionAgent = ({ mode: modeFromProps = ModeEnum.DataAgent }: DataAgentsP
     }
     return {};
   }, []);
-
 
   const publishModeRef = useRef<PublishModeEnum | undefined>(undefined);
   const nextPaginationMarkerStrRef = useRef<string>(''); // 分页marker，用于获取下一批数据
@@ -424,7 +429,7 @@ const DecisionAgent = ({ mode: modeFromProps = ModeEnum.DataAgent }: DataAgentsP
       case AgentActionEnum.ViewAPI:
         // 查看API
         microWidgetProps?.history.navigateToMicroWidget({
-          name: 'agent-list',
+          name: 'agent-square',
           path: `/api-doc?id=${agent?.id}&name=${encodeURIComponent(agent?.name)}&version=${agent?.version}&hidesidebar=true&hideHeaderPath=true`,
           isNewTab: true,
         });
@@ -466,7 +471,7 @@ const DecisionAgent = ({ mode: modeFromProps = ModeEnum.DataAgent }: DataAgentsP
       case TemplateActionEnum.TemplateConfig:
         // 跳转到配置信息详情页面
         microWidgetProps?.history.navigateToMicroWidget({
-          name: mode === ModeEnum.MyTemplate ? 'my-agent-list' : 'agent-template',
+          name: mode === ModeEnum.MyTemplate ? 'my-agent-list' : 'agent-square',
           path: `/template-detail/${agent.tpl_id ?? agent.id}?hidesidebar=true&hideHeaderPath=true`,
           isNewTab: true,
         });
@@ -1215,7 +1220,7 @@ const DecisionAgent = ({ mode: modeFromProps = ModeEnum.DataAgent }: DataAgentsP
   }, [mode]);
 
   return (
-    <GradientContainer className={classNames(styles.listPageContainer, 'dip-flex-column')}>
+    <GradientContainer className={classNames(styles.listPageContainer, 'dip-flex-column')} showBg={showBg}>
       <ResizeObserver
         onResize={({ width }) => {
           if (width > 0) {
@@ -1232,14 +1237,16 @@ const DecisionAgent = ({ mode: modeFromProps = ModeEnum.DataAgent }: DataAgentsP
       >
         <div className="dip-flex-item-full-height dip-flex-column">
           {/* 如果不是广场页面（没有最近访问），则 Header 固定在顶部不随页面滚动 */}
-          {!showRecent && <Header mode={mode} isExportMode={isExportMode} onCreate={handleCreateClick} />}
+          {!showRecent && showHeader && <Header mode={mode} isExportMode={isExportMode} onCreate={handleCreateClick} />}
 
           <div
             ref={showRecent ? pageContainerRef : null}
             className={classNames('dip-flex-column dip-overflow-auto', showRecent ? 'dip-flex-item-full-height' : '')}
           >
             {/* 只有广场页面，Header 在滚动容器内，随页面滚动 */}
-            {showRecent && <Header mode={mode} isExportMode={isExportMode} onCreate={handleCreateClick} />}
+            {showRecent && showHeader && (
+              <Header mode={mode} isExportMode={isExportMode} onCreate={handleCreateClick} />
+            )}
 
             {/* 最近访问 */}
             {showRecent && Boolean(recentLoading || recentError || recentAgents?.length) && (
