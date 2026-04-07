@@ -1,22 +1,31 @@
-import { lazy } from 'react'
-import applicationsUrl from '@/assets/images/sider/applications.svg'
-import appStoreUrl from '@/assets/images/sider/appStore.svg'
-import digitalHumanUrl from '@/assets/images/sider/digitalHuman.svg'
-import dipStudioUrl from '@/assets/images/sider/dipStudio.svg'
-import type { RouteConfig } from './types'
+import { lazy } from 'react';
+import applicationsUrl from '@/assets/images/sider/applications.svg';
+import appStoreUrl from '@/assets/images/sider/appStore.svg';
+import digitalHumanUrl from '@/assets/images/sider/digitalHuman.svg';
+import dipStudioUrl from '@/assets/images/sider/dipStudio.svg';
+import { BUSINESS_NETWORK_BASE_PATH, businessLeafMenuItems } from '@/components/Sider/BusinessSider/menus';
+import type { RouteConfig } from './types';
 
-const MyApp = lazy(() => import('../pages/MyApp'))
-const AppStore = lazy(() => import('../pages/AppStore'))
-const Home = lazy(() => import('../pages/Home'))
-const WorkPlan = lazy(() => import('../pages/WorkPlan'))
-const WorkPlanDetail = lazy(() => import('../pages/WorkPlan/Details'))
-const History = lazy(() => import('../pages/History'))
-const HistoryConversation = lazy(() => import('../pages/History/HistoryConversation'))
-const DigitalHumanManagement = lazy(() => import('../pages/DigitalHuman/Management'))
-const DigitalHumanDetail = lazy(() => import('../pages/DigitalHuman/Details'))
-const DHSetting = lazy(() => import('../pages/DigitalHuman/DHSetting'))
-const Conversation = lazy(() => import('../pages/Conversation'))
-const InitialConfiguration = lazy(() => import('../pages/InitialConfiguration'))
+const MyApp = lazy(() => import('../pages/MyApp'));
+const AppStore = lazy(() => import('../pages/AppStore'));
+const Home = lazy(() => import('../pages/Home'));
+const WorkPlan = lazy(() => import('../pages/WorkPlan'));
+const WorkPlanDetail = lazy(() => import('../pages/WorkPlan/Details'));
+const History = lazy(() => import('../pages/History'));
+const HistoryConversation = lazy(() => import('../pages/History/HistoryConversation'));
+const DigitalHumanManagement = lazy(() => import('../pages/DigitalHuman/Management'));
+const DigitalHumanDetail = lazy(() => import('../pages/DigitalHuman/Details'));
+const DHSetting = lazy(() => import('../pages/DigitalHuman/DHSetting'));
+const Conversation = lazy(() => import('../pages/Conversation'));
+const InitialConfiguration = lazy(() => import('../pages/InitialConfiguration'));
+const BusinessNetwork = lazy(() => import('../pages/BusinessNetwork'));
+
+const businessLayoutConfig = {
+  hasSider: true,
+  hasHeader: true,
+  siderType: 'business',
+  headerType: 'business',
+} as const;
 
 /**
  * 路由配置数组
@@ -280,4 +289,39 @@ export const routeConfigs: RouteConfig[] = [
       },
     },
   },
-]
+  {
+    path: BUSINESS_NETWORK_BASE_PATH.replace(/^\//, ''),
+    key: 'business-network',
+    label: '全局业务知识网络',
+    element: <BusinessNetwork />,
+    sidebarMode: 'hidden',
+    handle: {
+      layout: businessLayoutConfig,
+    },
+  },
+  ...businessLeafMenuItems.flatMap((item): RouteConfig[] => {
+    const normalizedPath = item.path.replace(/^\//, '');
+    return [
+      {
+        path: normalizedPath,
+        key: item.key,
+        label: item.label,
+        element: <BusinessNetwork />,
+        sidebarMode: 'hidden',
+        handle: {
+          layout: businessLayoutConfig,
+        },
+      },
+      {
+        path: `${normalizedPath}/*`,
+        key: `${item.key}-nested`,
+        label: item.label,
+        element: <BusinessNetwork />,
+        sidebarMode: 'hidden',
+        handle: {
+          layout: businessLayoutConfig,
+        },
+      },
+    ];
+  }),
+];

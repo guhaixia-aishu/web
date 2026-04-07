@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { SiderType } from '@/routes/types'
 import { useUserInfoStore } from '@/stores/userInfoStore'
 import AdminSider from './AdminSider'
+import BusinessSider from './BusinessSider'
 import HomeSider from './HomeSider'
 import styles from './index.module.less'
 import StoreSider from './StoreSider'
@@ -55,7 +56,9 @@ const Sider = ({ collapsed, onCollapse, topOffset = 0, type = 'home' }: SiderPro
         bottom: 0,
       }}
     >
-      {type === 'home' || type === 'studio' ? (
+      {type === 'business' ? (
+        <BusinessSider collapsed={collapsed} onCollapse={onCollapse} />
+      ) : type === 'home' || type === 'studio' ? (
         isAdmin ? (
           <AdminSider collapsed={collapsed} onCollapse={onCollapse} siderType={type} />
         ) : (
