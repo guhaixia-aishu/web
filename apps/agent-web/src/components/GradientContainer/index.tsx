@@ -6,9 +6,10 @@ interface GradientContainerProps {
   children: ReactNode;
   className?: string;
   style?: CSSProperties;
+  showBg?: boolean;
 }
-const GradientContainer: React.FC<GradientContainerProps> = ({ children, className, style }) => {
-  return (
+const GradientContainer: React.FC<GradientContainerProps> = ({ children, className, style, showBg = true }) => {
+  return showBg ? (
     <div
       style={{
         backgroundImage: `url(${bg})`,
@@ -18,6 +19,8 @@ const GradientContainer: React.FC<GradientContainerProps> = ({ children, classNa
     >
       {children}
     </div>
+  ) : (
+    <div className={classNames(className)}>{children}</div>
   );
 };
 
