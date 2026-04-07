@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import _, { debounce } from 'lodash';
-import { message, Popover, Checkbox, Tooltip, Spin, Tag } from 'antd';
+import { message, Popover, Checkbox, Tooltip, Spin } from 'antd';
 import intl from 'react-intl-universal';
 import SearchInput from '@/components/SearchInput';
 import AdTree from '@/components/AdTree';
@@ -9,13 +9,13 @@ import LoadingMask from '@/components/LoadingMask';
 import AdTab from '@/components/AdTab';
 import LoadFailed from '@/components/LoadFailed';
 import UniversalModal from '@/components/UniversalModal';
-import { AdTreeDataNode, adTreeUtils } from '@/utils/handle-function';
+import { type AdTreeDataNode, adTreeUtils } from '@/utils/handle-function';
 import { getToolBoxListFromMarks, getBoxToolList, getGlobalMarketToolList } from '@/apis/agent-operator-integration';
 import {
   getMCPServerList,
   getMCPServerTools,
-  MCPServerReleaseInfo,
-  MCPTool,
+  type MCPServerReleaseInfo,
+  type MCPTool,
 } from '@/apis/agent-operator-integration/mcp';
 import { useMicroWidgetProps, useBusinessDomain } from '@/hooks';
 import { getModelList as getModelListReq } from '@/apis/model-manager';
@@ -40,16 +40,9 @@ import {
 } from '../utils';
 import './style.less';
 
-const getBusinessDomainName = (businessDomainMap: Record<string, any>, businessDomainId: string) => {
-  const currentDomainName = intl.get('businessDomain.currentDomain');
-  return businessDomainMap?.[businessDomainId]?.isCurrent
-    ? currentDomainName
-    : businessDomainMap?.[businessDomainId]?.name || currentDomainName;
-};
-
 const ToolModal = ({ agentKey, onCancel, value, onConfirm, retrieverBlockOptions, allPreviousBlockVars }: any) => {
   const microWidgetProps = useMicroWidgetProps();
-  const { publicAndCurrentDomainIds, businessDomainMap } = useBusinessDomain();
+  const { publicAndCurrentDomainIds } = useBusinessDomain();
   const [treeProps, setTreeProps, getTreeProps] = useLatestState({
     treeData: [] as AdTreeDataNode[],
     checkedKeys: [] as any,
@@ -491,11 +484,6 @@ const ToolModal = ({ agentKey, onCancel, value, onConfirm, retrieverBlockOptions
       IconComponent = <MCPIcon style={{ width: 38, height: 38, minWidth: '32px' }} />;
     }
 
-    const businessDomainName =
-      IconComponent && nodeData.sourceData?.business_domain_id
-        ? getBusinessDomainName(businessDomainMap as Record<string, any>, nodeData.sourceData?.business_domain_id)
-        : '';
-
     return (
       <span className="dip-flex-align-center dip-mt-8">
         {IconComponent}
@@ -533,11 +521,6 @@ const ToolModal = ({ agentKey, onCancel, value, onConfirm, retrieverBlockOptions
             </div>
           )}
         </span>
-        {businessDomainName && (
-          <Tag color="blue" bordered={false} className="dip-ml-4">
-            {businessDomainName}
-          </Tag>
-        )}
       </span>
     );
   };
@@ -901,9 +884,6 @@ const ToolModal = ({ agentKey, onCancel, value, onConfirm, retrieverBlockOptions
 
   const renderAgentItem = (item: any) => {
     const { loading, details: inputList } = agentInputs[item?.id] || {};
-    const businessDomainName = item.business_domain_id
-      ? getBusinessDomainName(businessDomainMap as Record<string, any>, item.business_domain_id)
-      : ''; // 所属业务域名称
 
     return (
       <div className="dip-flex-align-center ">
@@ -993,11 +973,6 @@ const ToolModal = ({ agentKey, onCancel, value, onConfirm, retrieverBlockOptions
               </Popover>
             </div>
           </div>
-          {businessDomainName && (
-            <Tag color="blue" bordered={false} style={{ marginTop: '-20px' }}>
-              {businessDomainName}
-            </Tag>
-          )}
         </div>
       </div>
     );
