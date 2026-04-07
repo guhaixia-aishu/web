@@ -55,7 +55,6 @@ Describe the components available to the Decision Agent and explain how to use t
 Specify the input format, result content, style requirements, word count limits, etc. for the responses.`,
 };
 
-
 const RoleInstruction: React.FC = () => {
   const microWidgetProps = useMicroWidgetProps();
   const { publicAndCurrentDomainIds } = useBusinessDomain();
@@ -383,7 +382,7 @@ const RoleInstruction: React.FC = () => {
 
   const openDolphinDoc = () => {
     microWidgetProps?.history.navigateToMicroWidget({
-      name: 'agent-list',
+      name: 'agent-square',
       path: `/dolphin-language-doc?hidesidebar=true&hideHeaderPath=true`,
       isNewTab: true,
     });
