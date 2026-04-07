@@ -1313,7 +1313,7 @@ const DecisionAgent = ({
               <div
                 className={classNames(styles.categoryContainer, {
                   [styles.stickyHeader]: showRecent,
-                  [styles.isStuck]: isStuck,
+                  [styles.isStuck]: isStuck && agentList?.list?.length > 0,
                 })}
               >
                 <div className={classNames(styles.categoryHeader)}>
