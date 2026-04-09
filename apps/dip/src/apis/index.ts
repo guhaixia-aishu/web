@@ -1,4 +1,6 @@
 export * from './config'
+export * from './agent-operator-integration'
+export * from './authorization'
 export * from './dip-hub/applications'
 export * from './dip-hub/user'
 export * from './dip-studio'

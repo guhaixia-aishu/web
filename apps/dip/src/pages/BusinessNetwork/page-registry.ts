@@ -1,4 +1,4 @@
-import type { ComponentType, LazyExoticComponent } from 'react';
+import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
 import type { CurrentMicroAppInfo } from '@/stores/microAppStore';
 
 export interface BusinessComponentPageProps {
@@ -12,5 +12,5 @@ export const businessComponentPageRegistry: Record<
   string,
   ComponentType<BusinessComponentPageProps> | LazyExoticComponent<ComponentType<BusinessComponentPageProps>>
 > = {
-  // "xx-page": React.lazy(() => import("./xx-page")),
+  executionManagement: lazy(() => import('./ExecutionManagement')),
 };

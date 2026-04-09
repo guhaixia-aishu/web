@@ -18,6 +18,7 @@
     "lint:styles": "stylelint \"src/**/*.{less,scss,sass}\""
   },
   "dependencies": {
+    "@aishu-tech/components": "^1.0.1",
     "@ant-design/icons": "^6.1.0",
     "@ant-design/x": "^2.4.0",
     "@ant-design/x-markdown": "^2.4.0",

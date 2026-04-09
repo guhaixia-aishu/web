@@ -1,4 +1,5 @@
 declare module 'js-cookie'
+declare module '@aishu-tech/components/dist/dip-components.min'
 
 // declare module 'react-window' {
 //   import type { CSSProperties, ReactElement, FC } from 'react'

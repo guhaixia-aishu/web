@@ -157,11 +157,8 @@ export const businessMenuItems: BusinessMenuItem[] = [
         label: '执行单元管理',
         path: buildBusinessNetworkPath('/execution-management'),
         page: {
-          type: 'micro-app',
-          app: {
-            name: 'operator-management',
-            entry: '//ip:port/operator-web/operator-management.html',
-          },
+          type: 'component',
+          componentKey: 'executionManagement',
         },
       },
       {
