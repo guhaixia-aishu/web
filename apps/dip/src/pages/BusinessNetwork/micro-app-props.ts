@@ -163,13 +163,12 @@ export const buildBusinessMicroAppProps = ({
       loadMicroApp,
     },
     config: {
-      systemInfo: {
-        location: {
-          protocol: window.location.protocol,
-          hostname: window.location.hostname,
-          port: window.location.port,
-        },
-        as_access_prefix: '',
+      get systemInfo() {
+        const config = {
+          location: window.location,
+          as_access_prefix: '',
+        };
+        return config;
       },
       getTheme: {
         normal: theme,
